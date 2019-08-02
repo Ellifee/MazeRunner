@@ -58,7 +58,7 @@ class MazeSolverAlgoAStar:
             self.grid = numpy.empty((rows, columns), dtype=int)
             for i in range(rows):
                 for j in range(columns):
-                    self.grid[i][j]=0
+                    self.grid[i][j]=EMPTY
 
     def endMaze(self):
         self.grid[self.setStartRow][self.setStartCol] = self.START
