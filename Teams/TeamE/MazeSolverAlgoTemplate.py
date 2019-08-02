@@ -23,7 +23,7 @@ class MazeSolverAlgoTemplate:
         self.dimRows = 0
         self.setStartCol = 0
         self.setStartRow = 0
-        self.setEndCols = 0
+        self.setEndCol = 0
         self.setEndRow = 0
         self.grid = [[]]
 
@@ -37,7 +37,6 @@ class MazeSolverAlgoTemplate:
         
     # Setter method for the column of the start position 
     def setStartCol(self, col):
-        # TODO: this is you job now :-)
         self.setStartCol = col
 
     # Setter method for the row of the start position 
@@ -59,21 +58,26 @@ class MazeSolverAlgoTemplate:
     # Start to build up a new maze
     # HINT: don't forget to initialize all member variables of this class (grid, start position, end position, dimension,...)
     def startMaze(self):
-        # TODO: this is you job now :-)
+        self.setDimCols = 0
+        self.setDimRows = 0
+        self.setStartCol = 0
+        self.setStartRow = 0
+        self.setEndCol = 0
+        self.setEndRow = 0
         self.grid = [[]]
+
         self.grid[0][0] = EMPTY
 
 
     # Start to build up a new maze
     # HINT: don't forget to initialize all member variables of this class (grid, start position, end position, dimension,...)
     def startMaze(self, columns=0, rows=0):
-        # TODO: this is you job now :-)
         #HINT: populate grid with dimension row,column with zeros
         self.setDimCols = 0
         self.setDimRows = 0
         self.setStartCol = 0
         self.setStartRow = 0
-        self.setEndCols = 0
+        self.setEndCol = 0
         self.setEndRow = 0
         self.grid = [[]]
 
@@ -95,8 +99,17 @@ class MazeSolverAlgoTemplate:
     # loads a maze from a file pathToConfigFile
     def loadMaze(self,pathToConfigFile):
         # check whether a function numpy.loadtxt() could be useful
-        # TODO: this is you job now :-)
-        pass
+        self.grid=numpy.loadtxt(pathToConfigFile, delimiter=',',dtype=int)
+        self.setDimCols=self.grid.shape[0]
+        self.setDimRows=self.grid.shape[1]
+
+        start_arr = numpy.where(self.grid == 2)
+        self.setStartRow=int(start_arr[0][0])
+        self.setStartCol=int(start_arr[1][0])
+
+        end_arr = numpy.where(self.grid == 3)
+        self.setEndRow=int(end_arr[0][0])
+        self.setEndCol=int(end_arr[1][0])
 
     # clears the complete maze 
     def clearMaze(self):
@@ -104,15 +117,52 @@ class MazeSolverAlgoTemplate:
   
     # Decides whether a certain row,column grid element is inside the maze or outside
     def isInGrid(self,row,column):
-        # TODO: this is you job now :-)
-        pass
+        if row < 0:
+            return False
+
+        if column < 0:
+            return False
+
+        if row >= self.grid.shape[0]:
+            return False
+
+        if column >= self.grid.shape[1]:
+            return False
+
+        return True
 
 
     # Returns a list of all grid elements neighboured to the grid element row,column
     def getNeighbours(self,row,column):
-        # TODO: this is you job now :-)
+        neighbours = []
+
+        # no neighbours for out-of-grid elements
+        if self.isInGrid(row,column) == False:
+            return neighbours
+
+        # no neighbours for blocked grid elements
+        if self.grid[row,column] == self.OBSTACLE:
+            return neighbours
+    
+        nextRow = row + 1    
+        if (self.isInGrid(nextRow,column) == True and self.grid[nextRow][column] != self.OBSTACLE):
+            neighbours.append([nextRow,column])
+
+        previousRow = row - 1    
+        if (self.isInGrid(previousRow,column) == True and self.grid[previousRow][column] != self.OBSTACLE):
+            neighbours.append([previousRow,column])
+
+        nextColumn = column + 1    
+        if (self.isInGrid(row,nextColumn) == True and self.grid[row][nextColumn] != self.OBSTACLE):
+            neighbours.append([row,nextColumn])
+
+        previousColumn = column - 1    
+        if (self.isInGrid(row,previousColumn) == True and self.grid[row][previousColumn] != self.OBSTACLE):
+            neighbours.append([row,previousColumn])
+
+        return neighbours
         # TODO: Add a Unit Test Case --> Very good example for boundary tests and condition coverage
-        pass
+
 
     # Gives a grid element as string, the result should be a string row,column
     def gridElementToString(self,row,col):
@@ -146,8 +196,9 @@ class MazeSolverAlgoTemplate:
     # implementation taken from https://www.redblobgames.com/pathfinding/a-star/introduction.html
     #############################
     def myMazeSolver(self):
-        # TODO: this is you job now :-)
-        pass
+        neighbour
+        if self.setStartCol < self.setEndCol:
+            self.getNeighbours()
 
     # Command for starting the solving procedure
     def solveMaze(self):
@@ -161,7 +212,11 @@ if __name__ == '__main__':
     # HINT: in case you want to develop the solver without MQTT messages and without always
     #       loading new different mazes --> just load any maze you would like from a file
 
-    #mg.loadMaze("..\\MazeExamples\\Maze1.txt")
+    mg.loadMaze("\\Users\\Elke\\Documents\\CodeCamp\\MazeRunner\\MazeExamples\\Maze1.txt")
+    mg.printMaze()
+
+    neighbours = mg.getNeighbours(0,0)
+    print(neighbours)
     #solutionString = mg.solveMaze()
     #print(solutionString)
    

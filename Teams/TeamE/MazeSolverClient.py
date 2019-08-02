@@ -46,11 +46,11 @@ class MazeSolverClient:
 
     # Implement MQTT receive message function
     def onMessage(self, master, obj, msg):
-        # TODO: this is you job now :-)
         # HINT: it might be a good idea to look into file Framework\Test\test_mqtt_subscriber.py
-        topic = msg.topic
-        payload = msg.payload.decode("utf-8"))
-        print("TEAM_TEMPLATE: Received message:",  str(topic) , " --> " , str(payload)
+
+        topic = str(msg.topic)
+        payload = str(msg.payload.decode("utf-8"))
+        print("TEAM_TEMPLATE: Received message:",  topic , " --> " , payload)
         
         if topic=="/maze":
             if payload == "clear":

@@ -13,8 +13,8 @@ class MazeSolverClient:
 
     def __init__(self,master):
         self.master=master
-        self.master.on_connect=self.onConnect
-        self.master.on_message=self.onMessage
+        self.master.on_connect = self.onConnect
+        self.master.on_message = self.onMessage
         self.master.connect(mqtt_server,1883,60)
 
         self.solver = MazeSolverAlgoAStar()
