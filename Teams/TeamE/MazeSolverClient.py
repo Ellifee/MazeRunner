@@ -61,9 +61,24 @@ class MazeSolverClient:
                 self.solver.endMaze()
                 self.solver.printMaze()
         elif topic=="/maze/dimCols":
-            self.solver.setDimCols(int(topic))
+            self.solver.setDimCols(int(payload))
+            self.solver.startMaze(self.solver.dimRows, self.solver.dimColumns)
         elif topic=="/maze/dimRow":
-            self.solver.setDimRows(int(topic))
+            self.solver.setDimRows(int(payload))
+            self.solver.startMaze(self.solver.dimRows, self.solver.dimColumns)
+        elif topic=="/maze/startCols":
+            self.solver.setStartCol(int(payload))
+        elif topic=="/maze/startRow":
+            self.solver.setStartRow(int(payload))
+        elif topic=="/maze/endCols":
+            self.solver.setEndCol(int(payload))
+        elif topic=="/maze/endRow":
+            self.solver.setEndRow(int(payload))
+        elif topic=="/maze/blocked":
+            cell = payload.split(",")
+            self.solver.setBlocked(int(cell[0]),int(cell[1]))
+        else:
+            pass
 
 
 
@@ -78,8 +93,7 @@ class MazeSolverClient:
         self.master.subscribe("/maze/endCol" )
         self.master.subscribe("/maze/endRow" )
         self.master.subscribe("/maze/blocked" )
-          
-        # TODO: this is you job now :-)
+
         # HINT: it might be a good idea to look into file Framework\Test\test_mqtt_subscriber.py
         
 

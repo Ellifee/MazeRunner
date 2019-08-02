@@ -61,7 +61,7 @@ class MazeSolverAlgoTemplate:
     def startMaze(self):
         # TODO: this is you job now :-)
         self.grid = [[]]
-        self.grid[0][0] = 0
+        self.grid[0][0] = EMPTY
 
 
     # Start to build up a new maze
