@@ -17,8 +17,6 @@ class MazeSolverAlgoTemplate:
 
     def __init__(self):
         # TODO: this is you job now :-)
-        self.rows = 0
-        self.colums = 0
         self.dimCols = 0
         self.dimRows = 0
         self.setStartCol = 0
@@ -146,7 +144,7 @@ class MazeSolverAlgoTemplate:
     
         nextRow = row + 1    
         if (self.isInGrid(nextRow,column) == True and self.grid[nextRow][column] != self.OBSTACLE):
-            neighbours.append([nextRow,column])
+            neighbours.append([nextRow,column]) 
 
         previousRow = row - 1    
         if (self.isInGrid(previousRow,column) == True and self.grid[previousRow][column] != self.OBSTACLE):
@@ -166,9 +164,10 @@ class MazeSolverAlgoTemplate:
 
     # Gives a grid element as string, the result should be a string row,column
     def gridElementToString(self,row,col):
-        # TODO: this is you job now :-)
+        result = "" + str(row) + "," + str(col)
+        return result
+    
         # HINT: this method is used as primary key in a lookup table
-        pass
     
     # check whether two different grid elements are identical
     # aGrid and bGrid are both elements [row,column]
@@ -186,9 +185,20 @@ class MazeSolverAlgoTemplate:
 
     # Generates the resulting path as string from the came_from list
     def generateResultPath(self,came_from):
-        # TODO: this is you job now :-)
-        # HINT: this method is a bit tricky as you have to invert the came_from list (follow the path from end to start)
-        pass
+        endpoint = self.gridElementToString(self.setEndRow, self.setEndCol)
+        solutionPath = [[self.setEndRow, self.setEndCol]]
+        
+        if endpoint in came_from:
+            current = endpoint
+
+            while came_from[current] != None:
+                solutionPath.append(came_from[current])
+                current = self.gridElementToString(came_from[current][0],came_from[current][1])
+
+        else:  
+            print("no solution!")
+
+        return solutionPath
 
     #############################
     # Definition of Maze solver algorithm
@@ -196,9 +206,35 @@ class MazeSolverAlgoTemplate:
     # implementation taken from https://www.redblobgames.com/pathfinding/a-star/introduction.html
     #############################
     def myMazeSolver(self):
-        neighbour
-        if self.setStartCol < self.setEndCol:
-            self.getNeighbours()
+        start = [self.setStartRow, self.setStartCol]
+        frontier = queue.Queue()        
+        frontier.put(start)             #legt Anfangskoordinaten in die Queue
+        startKey = self.gridElementToString(self.setStartRow, self.setStartCol) 
+                                        #Key für Dictionary
+
+        came_from = {}                  #Speichert, wo man schon war: ["aktuelle Koordinaten", Koordinaten "wo man schon war"]
+        came_from[startKey] = None      #Startwert hat keine vorigen Neighbours
+
+        while not frontier.empty():
+            current = frontier.get()    #firstINfirstOUT nimmt die nächste Position und löscht sie
+
+            for next in self.getNeighbours(current[0], current[1]):
+                                        #IN operator (mächtig) wandert alle Variablen der funktion ab (getNeighbours wird nur einma aufgerufen)
+                                        #in next werden die ERSTEN Nachbarkoordinaten gespeichert
+                nextKey = self.gridElementToString(next[0], next[1])
+                if nextKey not in came_from:        #sucht in Key in der Dictionary, ob wir dort schon waren
+                    frontier.put(next)              #legt neue Nachbarkoordinaten in frontierQueue
+                    came_from[nextKey] = current    #speichert die vorige Position ab
+        
+        result_path = self.generateResultPath(came_from)
+
+        return result_path
+
+
+    def myMazeSolverA(self):
+        pass
+        
+
 
     # Command for starting the solving procedure
     def solveMaze(self):
@@ -217,6 +253,7 @@ if __name__ == '__main__':
 
     neighbours = mg.getNeighbours(0,0)
     print(neighbours)
-    #solutionString = mg.solveMaze()
-    #print(solutionString)
+    #print(mg.gridElementToString(mg.setStartRow,mg.setStartCol))
+    solutionString = mg.solveMaze()
+    print(solutionString)
    
