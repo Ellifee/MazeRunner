@@ -19,15 +19,14 @@ class MazeSolverClient:
 
     # initialize the MQTT client
     def __init__(self,master):
-        # TODO: this is you job now :-)
 
         print("Constructor Sample_MQTT_Publisher")
-        self.master=master
+        self.master = master #= mqtt client
 
         # HINT: here you should register the onConnect and onMessage callback functions
         #       it might be a good idea to look into file Framework\Test\test_mqtt_publisher.py
-        self.master.on_connect=self.onConnect
-        self.master.on_message=self.onMessage
+        self.master.on_connect = self.onConnect
+        self.master.on_message = self.onMessage
         self.master.connect(mqtt_server,1883,60)
 
         self.solver = MazeSolverAlgoTemplate()
@@ -35,13 +34,7 @@ class MazeSolverClient:
         # This MQTT client forwards the requests, so you need a link to the solver
         # HINT: don't forget to create your algorithm class here, e.g.
         #self.solver = MazeSolverAlgoTemplate()
-        #pass
-
-    # Implement MQTT publishing function
-    def publish(self, topic, message=None, qos=0, retain=False):
-        # TODO: this is you job now :-)
-        # HINT: it might be a good idea to look into file Framework\Test\test_mqtt_publisher.py
-        pass
+        #pass       
 
 
     # Implement MQTT receive message function
@@ -59,18 +52,22 @@ class MazeSolverClient:
                 self.solver.startMaze()
             elif payload == "end":
                 self.solver.endMaze()
+
+                print("Following maze received via MQTT")
                 self.solver.printMaze()
-        elif topic=="/maze/dimCols":
+            elif payload == "solve":
+                self.solveMaze() 
+        elif topic=="/maze/dimCol":
             self.solver.setDimCols(int(payload))
-            self.solver.startMaze(self.solver.dimRows, self.solver.dimColumns)
+            self.solver.startMaze(self.solver.dimRows, self.solver.dimCols)
         elif topic=="/maze/dimRow":
             self.solver.setDimRows(int(payload))
-            self.solver.startMaze(self.solver.dimRows, self.solver.dimColumns)
-        elif topic=="/maze/startCols":
+            self.solver.startMaze(self.solver.dimRows, self.solver.dimCols)
+        elif topic=="/maze/startCol":
             self.solver.setStartCol(int(payload))
         elif topic=="/maze/startRow":
             self.solver.setStartRow(int(payload))
-        elif topic=="/maze/endCols":
+        elif topic=="/maze/endCol":
             self.solver.setEndCol(int(payload))
         elif topic=="/maze/endRow":
             self.solver.setEndRow(int(payload))
@@ -96,14 +93,25 @@ class MazeSolverClient:
 
         # HINT: it might be a good idea to look into file Framework\Test\test_mqtt_subscriber.py
         
+    # Implement MQTT publishing function
+    def publish(self, topic, message=None, qos=0, retain=False):
+        print("Published message: " , topic , " --> " , message)
+        self.master.publish(topic,message,qos,retain)
+        # HINT: it might be a good idea to look into file Framework\Test\test_mqtt_publisher.py
+
 
     # Initiate the solving process of the maze solver
     def solveMaze(self):
-        # TODO: this is you job now :-)
+        for step in self.solver.solveMaze():
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
+            step_str = '{},{}'.format(step[0],step[1])
+           
+            self.publish("/maze/go" , step_str)
+
 
         #HINT:  don't forget to publish the results, e.g. 
         #self.publish("/maze/go" , resultString)
-        pass
+        
 
     
 if __name__ == '__main__':

@@ -19,76 +19,75 @@ class MazeSolverAlgoTemplate:
         # TODO: this is you job now :-)
         self.dimCols = 0
         self.dimRows = 0
-        self.setStartCol = 0
-        self.setStartRow = 0
-        self.setEndCol = 0
-        self.setEndRow = 0
+        self.startCol = 0
+        self.startRow = 0
+        self.endCol = 0
+        self.endRow = 0
         self.grid = [[]]
 
     # Setter method for the maze dimension of the rows
     def setDimRows(self, rows):
-        self.setDimRows = rows
+        self.dimRows = rows
 
     # Setter method for the maze dimension of the columns
     def setDimCols(self, cols):
-        self.setDimCols = cols
+        self.dimCols = cols
         
     # Setter method for the column of the start position 
     def setStartCol(self, col):
-        self.setStartCol = col
+        self.startCol = col
 
     # Setter method for the row of the start position 
     def setStartRow(self, row):
-        self.setStartRow = col
+        self.startRow = row
 
     # Setter method for the column of the end position 
     def setEndCol(self, col):
-        self.setEndCol = col
+        self.endCol = col
 
     # Setter method for the row of the end position 
     def setEndRow(self, row):
-        self.setEndRow = row
+        self.endRow = row
 
     # Setter method for blocked grid elements
     def setBlocked(self, row, col):
-        self.grid[row][col] = OBSTACLE
+        self.grid[row][col] = self.OBSTACLE
 
     # Start to build up a new maze
     # HINT: don't forget to initialize all member variables of this class (grid, start position, end position, dimension,...)
     def startMaze(self):
-        self.setDimCols = 0
-        self.setDimRows = 0
-        self.setStartCol = 0
-        self.setStartRow = 0
-        self.setEndCol = 0
-        self.setEndRow = 0
+        self.dimCols = 0
+        self.dimRows = 0
+        self.startCol = 0
+        self.startRow = 0
+        self.endCol = 0
+        self.endRow = 0
         self.grid = [[]]
-
-        self.grid[0][0] = EMPTY
 
 
     # Start to build up a new maze
     # HINT: don't forget to initialize all member variables of this class (grid, start position, end position, dimension,...)
     def startMaze(self, columns=0, rows=0):
         #HINT: populate grid with dimension row,column with zeros
-        self.setDimCols = 0
-        self.setDimRows = 0
-        self.setStartCol = 0
-        self.setStartRow = 0
-        self.setEndCol = 0
-        self.setEndRow = 0
+        if columns == 0 and rows == 0:
+            self.startCol = 0
+            self.startRow = 0
+            self.endCol = 0
+            self.endRow = 0
+        
         self.grid = [[]]
 
-        if colums>0 and rows>0:
-            self.grid = numpy.empty((rows, colums), dtype=int)
-            for i in range(row):
+        if columns>0 and rows>0:
+            self.grid = numpy.empty((rows, columns), dtype=int)
+            for i in range(rows):
                 for j in range(columns):
-                    self.grid[i][j]=0
+                    self.grid[i][j]=self.EMPTY
+        print(self.grid)
 
     # Define what shall happen after the full information of a maze has been received
     def endMaze(self):
-        self.grid[self.setStartRow][self.setStartCol] = self.START
-        self.grid[self.setEndRow][self.setEndCol] = self.TARGET
+        self.grid[self.startRow][self.startCol] = self.START
+        self.grid[self.endRow][self.endCol] = self.TARGET
 
     # just prints a maze on the command line
     def printMaze(self):
@@ -98,16 +97,16 @@ class MazeSolverAlgoTemplate:
     def loadMaze(self,pathToConfigFile):
         # check whether a function numpy.loadtxt() could be useful
         self.grid=numpy.loadtxt(pathToConfigFile, delimiter=',',dtype=int)
-        self.setDimCols=self.grid.shape[0]
-        self.setDimRows=self.grid.shape[1]
+        self.dimCols=self.grid.shape[0]
+        self.dimRows=self.grid.shape[1]
 
         start_arr = numpy.where(self.grid == 2)
-        self.setStartRow=int(start_arr[0][0])
-        self.setStartCol=int(start_arr[1][0])
+        self.startRow=int(start_arr[0][0])
+        self.startCol=int(start_arr[1][0])
 
         end_arr = numpy.where(self.grid == 3)
-        self.setEndRow=int(end_arr[0][0])
-        self.setEndCol=int(end_arr[1][0])
+        self.endRow=int(end_arr[0][0])
+        self.endCol=int(end_arr[1][0])
 
     # clears the complete maze 
     def clearMaze(self):
@@ -185,8 +184,10 @@ class MazeSolverAlgoTemplate:
 
     # Generates the resulting path as string from the came_from list
     def generateResultPath(self,came_from):
-        endpoint = self.gridElementToString(self.setEndRow, self.setEndCol)
-        solutionPath = [[self.setEndRow, self.setEndCol]]
+        endpoint = self.gridElementToString(self.endRow, self.endCol)
+        startpoint = self.gridElementToString(self.startRow, self.startCol)
+
+        solutionPath = [[self.endRow, self.endCol]]
         
         if endpoint in came_from:
             current = endpoint
@@ -198,6 +199,8 @@ class MazeSolverAlgoTemplate:
         else:  
             print("no solution!")
 
+        solutionPath.append(startpoint)
+        solutionPath.reverse()
         return solutionPath
 
     #############################
@@ -206,10 +209,10 @@ class MazeSolverAlgoTemplate:
     # implementation taken from https://www.redblobgames.com/pathfinding/a-star/introduction.html
     #############################
     def myMazeSolver(self):
-        start = [self.setStartRow, self.setStartCol]
+        start = [self.startRow, self.startCol]
         frontier = queue.Queue()        
         frontier.put(start)             #legt Anfangskoordinaten in die Queue
-        startKey = self.gridElementToString(self.setStartRow, self.setStartCol) 
+        startKey = self.gridElementToString(self.startRow, self.startCol) 
                                         #Key für Dictionary
 
         came_from = {}                  #Speichert, wo man schon war: ["aktuelle Koordinaten", Koordinaten "wo man schon war"]
@@ -227,13 +230,10 @@ class MazeSolverAlgoTemplate:
                     came_from[nextKey] = current    #speichert die vorige Position ab
         
         result_path = self.generateResultPath(came_from)
-
         return result_path
 
 
-    def myMazeSolverA(self):
-        pass
-        
+  
 
 
     # Command for starting the solving procedure
@@ -248,11 +248,11 @@ if __name__ == '__main__':
     # HINT: in case you want to develop the solver without MQTT messages and without always
     #       loading new different mazes --> just load any maze you would like from a file
 
-    mg.loadMaze("\\Users\\Elke\\Documents\\CodeCamp\\MazeRunner\\MazeExamples\\Maze1.txt")
+    mg.loadMaze("\\Users\\Elke\\Documents\\CodeCamp\\MazeRunner\\MazeExamples\\Maze2.txt")
     mg.printMaze()
 
-    neighbours = mg.getNeighbours(0,0)
-    print(neighbours)
+    #neighbours = mg.getNeighbours(0,0)
+    #print(neighbours)
     #print(mg.gridElementToString(mg.setStartRow,mg.setStartCol))
     solutionString = mg.solveMaze()
     print(solutionString)
